@@ -1,6 +1,7 @@
 # Directories #
 temp/
 .idea/
+data/photo/
 
 # OS Files #
 .DS_Store

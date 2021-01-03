@@ -4,12 +4,6 @@ import matplotlib.pyplot as plt
 cifar10 = tf.keras.datasets.cifar10
 
 
-def chunks(lst, n):
-    """Yield successive n-sized chunks from lst."""
-    for idx in range(0, len(lst), n):
-        yield lst[idx:idx + n]
-
-
 # 데이터 저장 경로
 save_dir = '../data'
 save_photo_dir = '../data/photo'
@@ -55,9 +49,7 @@ model.compile(optimizer='adam',
 model.fit(x_train, y_train, batch_size=64, epochs=5)
 
 # 평가
-score = model.evaluate(x_test, y_test)
-print(f'loss = {score[0]}')
-print(f'accuracy = {score[1]}')
+model.evaluate(x_test, y_test)
 
 # 예측 & 출력
 prd = model.predict(x_test)
@@ -67,7 +59,8 @@ for i, v in enumerate(prd):
 
     if predicted_y != real_y:
         plt.figure()
-        plt.suptitle(f'''predicted: {categories[predicted_y]}\nreal: {categories[real_y]}''')
+        plt.suptitle(f'''predicted: {categories[predicted_y]}, real: {categories[real_y]}''',
+                     fontsize=20, fontweight='bold')
         plt.imshow(x_test[i])
         plt.savefig(f'{save_photo_dir}/{i}.png')
         plt.close()
