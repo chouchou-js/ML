@@ -1,0 +1,8 @@
+# Directories #
+temp/
+.idea/
+
+# OS Files #
+.DS_Store
+*.log
+*.iml

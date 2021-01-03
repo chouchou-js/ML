@@ -1,40 +1,44 @@
-import tensorflow as tf
-import tensorflow.keras.layers as layers
-import tensorflow.keras.optimizers as optimizers
-import tensorflow.keras.utils as utils
+import matplotlib.backends.backend_pdf
+import matplotlib.pyplot as plt
+import random
 
-if __name__ == '__main__':
-    # 데이터 로드
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
-    # 데이터 변환
-    x_train = x_train.reshape(60000, 784).astype('float32')
-    x_test = x_test.reshape(10000, 784).astype('float32')
-    x_train /= 255
-    x_test /= 255
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for idx in range(0, len(lst), n):
+        yield lst[idx:idx + n]
 
-    # 데이터 레이블
-    y_train = utils.to_categorical(y_train, 10)
-    y_test = utils.to_categorical(y_test, 10)
+# some random data
+data = []
+for i in range(0, 5000):
+    data.append([i, float(i + random.randrange(-50, 50))/100, 5])
 
-    # 모델 정의
-    model = tf.keras.models.Sequential()
-    model.add(layers.Dense(512, input_shape=(784,)))
-    model.add(layers.Activation('relu'))
-    model.add(layers.Dense(10))
-    model.add(layers.Activation('softmax'))
+pdf = matplotlib.backends.backend_pdf.PdfPages('a.pdf')
+cnt = 0
+figs = plt.figure()
+for data_chunk in chunks(data, 600):
+    plot_num = 321
+    fig = plt.figure(figsize=(10, 10)) # inches
+    for sub_chunk in chunks(data_chunk, 100):
+        cnt += 1
+        d = [a[0] for a in sub_chunk]
+        z = [a[1] for a in sub_chunk]
+        zv = [a[2] for a in sub_chunk]
 
-    # 모델 구축
-    model.compile(
-        loss='categorical_crossentropy',
-        optimizer=optimizers.Adam(),
-        metrics=['accuracy']
-    )
+        print(plot_num)
+        plt.subplot(plot_num)
+        # plot profile, define styles
+        plt.plot(d,z,'r',linewidth=0.75)
+        plt.plot(d,z,'ro',alpha=0.3, markersize=3)
+        plt.plot(d,zv,'k--',linewidth=0.5)
+        plt.xlabel('Distance from start')
+        plt.ylabel('Elevation')
+        plt.title('Profile {0} using Python matplotlib'.format(cnt))
 
-    # 훈련
-    hist = model.fit(x_train, y_train)
+        # change font size
+        plt.rcParams.update({'font.size': 8})
+        plot_num += 1
 
-    # 평가
-    score = model.evaluate(x_test, y_test, verbose=1)
-    print(f'loss = {score[0]}')
-    print(f'accuracy = {score[1]}')
+    pdf.savefig(fig)
+
+pdf.close()
